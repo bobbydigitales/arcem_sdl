@@ -1,0 +1,77 @@
+@database ArcEm.guide
+@wordwrap
+
+@node Main "ArcEm"
+ArcEm 1.50
+==========
+
+ArcEm is a GPL emulator for Acorn Archimedes computers.  This guide contains notes pertaining only to the AmigaOS port, the general documentation should be referenced in all other cases.
+
+@{"Requirements" link require}
+@{"Usage" link usage}
+@{"Tooltypes" link tooltypes}
+@{"ARexx" link arexx}
+@{"Known bugs" link bugs} and other things to be aware of
+@{"Contact" link contact}
+
+@{"Bonus!" link Bonus}
+@{"Icons" link Icons}
+
+@endnode
+
+@node require "Requirements"
+ArcEm for AmigaOS requires OS4 and the AUDIO: device to be mounted.  You also need a suitable ROM image called "ROM" in ArcEm's directory.
+@endnode
+
+@node Usage
+Pressing the RAmiga key while the emulator is running will present you with a small GUI to change floppy disks, quit the emulator or run ARexx scripts.
+
+You can quit with the command *ArcEm_Shutdown or by executing the quit.arcem ARexx script.
+
+@endnode
+
+@node Tooltypes
+The Amiga version can use tooltypes in place of command line switches, they follow the same rules.  A list of command line options can be found by typing "ArcEm --help".
+
+Additionally, there is a tooltype ST506DISC which allows you to specify one ".arcemrc" config line.
+
+FORCE8BIT: Force ArcEm to only open 8-bit screens.  This potentially avoids some screen closing/opening and monitor resyncing, but may use more memory or be slower especially on planar configurations.
+
+SWAPMOUSEBUTTONS: Swaps MMB and RMB, most useful to allow two button mice to get into RISC OS menus.
+
+NOCONSOLEOUTPUT: Stops console output.
+
+ANYMONITOR: Allow ArcEm to open screens on any monitor, not just the one Workbench is using.
+
+ENABLEOCM: Allows ArcEm to use the APM460ex (SAM460) on-chip memory to attempt to speed up emulation.
+@endnode
+
+@node ARexx
+ARexx commands currently implemented:
+
+QUIT: Quits ArcEm
+
+FLOPPY: FLOPPY <n> ejects the disk in drive <n>
+        FLOPPY <n> <file> inserts <file> into drive <n>
+
+@endnode
+
+@node bugs "Known bugs/issues"
+There is no error output when run from Workbench - if it doesn't work, launch it from the Shell and see what it says.  You need a ROM image called "ROM" for ArcEm to start up at all.
+
+ArcEm always opens an 8-bit screen even if the emulation requests a lower depth.
+
+Some keys produce unexpected characters within the emulation.  This isn't actually a bug - it is not ArcEm's job to remap the user's keyboard, it is up to RISC OS to map the keyboard correctly in the first place.  I have employed a direct Amiga rawkey -> Archimedes key mapping based on key position only (with few exceptions).  If some keys are in unexpected places, I have included Acorn's !IKHG in the hostfs directory which should allow you to remap them.
+@endnode
+
+@node Contact
+For information and bug reports relating to the Amiga version, please contact Chris Young <chris@unsatisfactorysoftware.co.uk>
+@endnode
+
+@node Bonus
+As a special treat, I've included an Amiga pointer preset in the classic (pre-newlook) RISC OS style.
+@endnode
+
+@node Icons
+The 32-bit icons included in the ArcEm archive were designed by Martin "Mason" Merz, http://www.masonicons.de
+@endnode
