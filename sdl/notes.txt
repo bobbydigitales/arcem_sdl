@@ -1,0 +1,15 @@
+Handle border color updates
+
+get row function from RowFuncs
+
+
+
+true_Host_RowStart
+    true_Host_DisplayRow
+        true_Host_BeginRow
+        true_Host_BeginUpdate
+        true_Host_WritePixels
+        true_Host_EndUpdate
+        true_Host_SkipPixels
+        
+        

@@ -75,8 +75,8 @@ static struct {
     const char *name;
     KeySym keysym;
 } mouse_key = {
-    "KP_Add",
-    XK_KP_Add
+    "KP_F6",
+    XK_F6
 };
 
 /* Structure to hold most of the X windows values, shared with ControlPane.c */

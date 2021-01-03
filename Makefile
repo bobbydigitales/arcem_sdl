@@ -50,21 +50,20 @@ CC=gcc
 LD=gcc
 LDFLAGS=
 
-WARN = -Wall -Wno-return-type -Wno-unknown-pragmas -Wshadow \
-   -Wpointer-arith -Wcast-align -Wstrict-prototypes \
-   -Wmissing-prototypes -Wmissing-declarations -Wnested-externs \
-   -Wcast-qual -Wwrite-strings -Wno-unused
+WARN = -Wno-everything
 
 ifeq ($(PROFILE),yes)
-CFLAGS = -O -g -pg -ftest-coverage -fprofile-arcs
-LIBS += -lgcov
+	CFLAGS = -O -g -pg -ftest-coverage -fprofile-arcs
+	LIBS += -lgcov
 else
-ifeq ($(DEBUG),yes)
-CFLAGS += -O0 -g
-else
-CFLAGS = -O3 -funroll-loops -fexpensive-optimizations -ffast-math \
-    -fomit-frame-pointer -frerun-cse-after-loop
-endif
+	ifeq ($(DEBUG),yes)
+		CFLAGS += -O0 -g
+	else
+		CFLAGS = -O3 
+		# -funroll-loops -fexpensive-optimizations -ffast-math \
+		-fomit-frame-pointer
+		#-frerun-cse-after-loop
+	endif
 endif
 
 CFLAGS += \
@@ -174,11 +173,11 @@ riscpkg: $(TARGET)
 endif
 
 ifeq (${SYSTEM},X)
-CFLAGS += -DSYSTEM_X -I/usr/X11R6/include
+CFLAGS += -DSYSTEM_X -I/opt/local/include/
 ifneq ($(shell uname),Darwin)
 CFLAGS += -D_LARGEFILE_SOURCE -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64
 endif
-LIBS += -L/usr/X11R6/lib -lXext -lX11
+LIBS += -L/opt/local/lib/ -lXext -lX11
 OBJS += X/true.o X/pseudo.o
 #SOUND_SUPPORT = yes
 endif
@@ -192,6 +191,29 @@ LIBS += -luser32 -lgdi32 -mno-cygwin
 # Comment the following line to have a console window
 LIBS += -mwindows
 endif
+
+ifeq (${SYSTEM},sdl)
+CC = gcc
+LD = gcc
+CFLAGS += -DSYSTEM_sdl -I/usr/local/include/SDL2
+#LDFLAGS += -s WASM=0
+OBJS += sdl/sdlDisplayDriver.o
+LIBS += -lSDL2 -L/usr/local/lib
+TARGET=arcem
+endif
+
+ifeq (${SYSTEM},web)
+SYSTEM=sdl
+CC = emcc
+LD = emcc
+#CFLAGS += -DSYSTEM_sdl -I/usr/local/Cellar/sdl2/2.0.5/include/SDL2/ -L/usr/local/Cellar/sdl2/2.0.5/lib/
+CFLAGS += -D__web__ -s USE_SDL=2 -s TOTAL_MEMORY=67108864 -g4
+LDFLAGS += -g4 -s USE_SDL=2 -s WASM=0 --preload-file ROM --preload-file arcemrc -s TOTAL_MEMORY=67108864
+OBJS += sdl/sdlDisplayDriver.o
+#LIBS += -lSDL2 -L/usr/local/Cellar/sdl2/2.0.5/lib/
+TARGET=arcem.html
+endif
+
 
 ifeq (${SOUND_SUPPORT},yes)
 CFLAGS += -DSOUND_SUPPORT
@@ -342,6 +364,9 @@ X/true.o: X/true.c
 
 X/pseudo.o: X/pseudo.c
 	$(CC) $(CFLAGS) -c $*.c -o X/pseudo.o
+
+sdl/sdlDisplayDriver.o: sdl/sdlDisplayDriver.c
+	$(CC) $(CFLAGS) -c $*.c -o sdl/sdlDisplayDriver.o
 
 
 # DO NOT DELETE
