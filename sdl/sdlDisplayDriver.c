@@ -43,33 +43,24 @@ static const int SDD_RowsAtOnce = 1;
 //    function parameters.
 typedef SDD_HostColour *SDD_Row;
 
-uint32_t pixelFromRGB(int red, int green, int blue)
-{
-   return red << 16 | green << 8 | blue;
-}
+// uint32_t pixelFromRGB(int red, int green, int blue)
+// {
+//    return red << 16 | green << 8 | blue;
+// }
 
-void putpixel(uint32_t *pixels, int x, int y, int width, int height, Uint32 targetPixel)
+void putpixel(SDD_HostColour* pixels, int x, int y, uint32_t pixel)
 {
-   pixels[y * width + x] = targetPixel;
+   if (!pixels) {
+      return;
+   }
+
+   pixels[(y * PD.cursorPitch/4) + x] = pixel;
 }
 
 int count = 0;
 
-/* ------------------------------------------------------------------ */
+void RefreshMouse(ARMul_State *state);
 
-/* X uses 16-bit RGB amounts.  If we've an Arcem one that's 4-bit, we
- * need to scale it up so 0x0 remains 0x0000 and 0xf becomes 0xffff,
- * with ther other fourteen values being evenly spread inbetween. */
-
-// unsigned int vidc_col_to_x_col(unsigned int col)
-// {
-//    unsigned int r = (col & 0xf) * 0x1111;
-//    unsigned int g = ((col & 0xf0) >> 4) * 0x1111;
-//    unsigned int b = ((col & 0xf00) >> 8) * 0x1111;
-//    return get_pixelval(r, g, b);
-// }
-
-// void SDD_Name(Host_PollDisplay)(ARMul_State *state)
 //  - A function that the driver will call at the start of each frame.
 void SDD_Name(Host_PollDisplay)(ARMul_State *state)
 {
@@ -77,49 +68,86 @@ void SDD_Name(Host_PollDisplay)(ARMul_State *state)
 
    // printf("Host_PollDisplay\n");
 
-   SDL_Event e;
+   SDL_Event event;
 
-   while (SDL_PollEvent(&e) != 0)
+   while (SDL_PollEvent(&event) != 0)
    {
-      //User requests quit
-      if (e.type == SDL_QUIT)
+      switch (event.type)
       {
+
+      case SDL_KEYDOWN:
+         if (event.key.keysym.sym == SDLK_ESCAPE)
+         {
+            SDL_SetRelativeMouseMode(SDL_FALSE);
+         }
+
+         // ProcessKey(event);
+         break;
+
+      case SDL_QUIT:
          SDL_DestroyRenderer(PD.renderer);
          SDL_DestroyWindow(PD.window);
-         SDL_DestroyTexture(PD.texture);
+         SDL_DestroyTexture(PD.displayTexture);
          SDL_Quit();
          exit(0);
+         break;
+
+      case SDL_MOUSEMOTION:
+         printf("Mouse motion: %d, %d\n", event.motion.xrel, event.motion.yrel);
+         sdlMouseInfo.xDiff = event.motion.xrel;
+         sdlMouseInfo.yDiff = event.motion.yrel;
+         sdlMouseInfo.mouseMoved = true;
+         break;
+
+      case SDL_MOUSEBUTTONDOWN:
+      case SDL_MOUSEBUTTONUP:
+         SDL_SetRelativeMouseMode(SDL_TRUE);
+         sdlMouseInfo.buttonIndex = event.button.button;
+         sdlMouseInfo.UpNDown = (event.button.state == SDL_RELEASED) ? true : false;
+         sdlMouseInfo.buttonChanged = true;
+         printf("Mouse button event: %d, %d\n", sdlMouseInfo.buttonIndex, sdlMouseInfo.UpNDown);
+         break;
+
+      default:
+         break;
       }
    }
 
-   if (PD.window && PD.renderer && PD.texture && PD.pixels)
+   RefreshMouse(state);
+
+   if (PD.window && PD.renderer && PD.displayTexture && PD.pixels && PD.cursorPixels)
    {
-      // int textureWidth, textureHeight;
-      // SDL_QueryTexture(PD.texture, NULL, NULL, &textureHeight, &textureWidth);
+      // SDL_SetRenderDrawColor(PD.renderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
+      // SDL_RenderClear(PD.renderer);
+      SDL_UnlockTexture(PD.displayTexture);
+      SDL_RenderCopy(PD.renderer, PD.displayTexture, NULL, NULL);
 
-      SDL_SetRenderDrawColor(PD.renderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
-      SDL_RenderClear(PD.renderer);
+      SDL_Rect srcRect, dstRect;
 
-      // uint32_t *dst;
-      // uint32_t color;
-      // for (int row = 0; row < PD.height; ++row)
-      // {
-      //    dst = (uint32_t *)((uint8_t *)PD.pixels + row * PD.pitch);
-      //    for (int col = 0; col < PD.width; ++col)
-      //    {
-      //       color = col % 10 ? pixelFromRGB(0, 0, 0) : pixelFromRGB(col % 128 + 127, 0, col % 128 + 127);
-      //       *dst++ = color;
-      //    }
-      // }
-      SDL_UnlockTexture(PD.texture);
-      SDL_RenderCopy(PD.renderer, PD.texture, NULL, NULL);
+      srcRect.x = 0;
+      srcRect.y = 0;
+      srcRect.w = 32;
+      srcRect.h = PD.mouseHeight;
+
+      dstRect.x = PD.mouseX;
+      dstRect.y = PD.mouseY;
+      dstRect.w = 32;
+      dstRect.h = PD.mouseHeight;
+
+      SDL_UnlockTexture(PD.cursorTexture);
+      SDL_RenderCopy(PD.renderer, PD.cursorTexture, &srcRect, &dstRect);
+
       SDL_RenderPresent(PD.renderer);
    }
 
-   if (SDL_LockTexture(PD.texture, NULL, &PD.pixels, &PD.pitch) < 0)
+   if (SDL_LockTexture(PD.displayTexture, NULL, &PD.pixels, &PD.pitch) < 0)
    {
-      SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Couldn't lock texture: %s\n", SDL_GetError());
-      // quit(5);
+      SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Couldn't lock display texture: %s\n", SDL_GetError());
+   }
+
+   if (SDL_LockTexture(PD.cursorTexture, NULL, &PD.cursorPixels, &PD.cursorPitch) < 0)
+   {
+      SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Couldn't lock cursor texture: %s\n", SDL_GetError());
    }
 }
 
@@ -135,7 +163,7 @@ SDD_HostColour SDD_Name(Host_GetColour)(ARMul_State *state, uint_fast16_t col)
    int r = (col & 0x00f) << 4;
    int g = (col & 0x0f0);
    int b = (col & 0xf00) >> 4;
-   printf("Host_GetColour: %d %d %d, ", r, g, b);
+   printf("Host_GetColour: %d %d %d\n", r, g, b);
 
    return r << 16 | g << 8 | b;
 }
@@ -252,4 +280,81 @@ void SDD_Name(Host_ChangeMode)(ARMul_State *state, int width, int height, int hz
    // memset(dibbmp, 0, sizeof(SDD_HostColour) * MonitorWidth * MonitorHeight);
 
    printf("Host_ChangeMode, ");
+}
+
+void RefreshMouse(ARMul_State *state)
+{
+   
+   if (!PD.cursorPixels) {
+      return;
+   }
+   
+   int x, y, offset, pix, repeat;
+   int memptr;
+   int HorizPos;
+   int Height = ((int)VIDC.Vert_CursorEnd - (int)VIDC.Vert_CursorStart) * HD.YScale;
+   int VertPos;
+   int textureOffset;
+   SDD_HostColour cursorPal[4];
+
+   DisplayDev_GetCursorPos(state, &HorizPos, &VertPos);
+   HorizPos = HorizPos * HD.XScale + HD.XOffset;
+   VertPos = VertPos * HD.YScale + HD.YOffset;
+
+   if (Height < 0)
+      Height = 0;
+   if (VertPos < 0)
+      VertPos = 0;
+
+   PD.mouseX = HorizPos;
+   PD.mouseY = VertPos;
+   PD.mouseHeight = Height;
+
+   printf("HorizPos: %d, VertPos: %d, Height: %d\n", HorizPos, VertPos, Height);
+
+   /* Cursor palette */
+   cursorPal[0] = 0;
+   for (x = 0; x < 3; x++)
+   {
+      cursorPal[x + 1] = SDD_Name(Host_GetColour)(state, VIDC.CursorPalette[x]);
+      // printf("palette colour: %d\n", cursorPal[x + 1]);
+   }
+
+   offset = 0;
+   memptr = MEMC.Cinit * 16;
+   repeat = 0;
+   for (y = 0; y < Height; y++)
+   {
+      if (offset < 512 * 1024)
+      {
+         ARMword tmp[2];
+
+         tmp[0] = MEMC.PhysRam[memptr / 4];
+         tmp[1] = MEMC.PhysRam[memptr / 4 + 1];
+
+         for (x = 0; x < 32; x++)
+         {
+            pix = ((tmp[x / 16] >> ((x & 15) * 2)) & 3);
+
+            textureOffset = PD.mouseX + x + (PD.height - PD.mouseY - y - 1) * PD.width;
+
+            // printf("p:%d o:%d ", pix, textureOffset);
+
+            putpixel(PD.cursorPixels, x, y, cursorPal[pix]);
+
+            // curbmp[x + (MonitorHeight - y - 1) * 32] =
+            //     (pix || diboffs < 0) ? cursorPal[pix] : dibbmp[diboffs];
+         };
+      }
+      // else
+      //    return;
+      // if (++repeat == HD.YScale)
+      // {
+      //    memptr += 8;
+      //    offset += 8;
+      //    repeat = 0;
+      // }
+   };
+
+   // printf("\n");
 }

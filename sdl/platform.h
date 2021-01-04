@@ -20,14 +20,47 @@
 struct plat_display {
   SDL_Window* window;
   SDL_Renderer* renderer;
-  SDL_Texture* texture;
+  SDL_Texture* displayTexture;
+  SDL_Texture* cursorTexture;
   void* pixels;
   int pitch;
+  
+  void* cursorPixels;
+  int cursorPitch;
+  
   int width;
   int height;
+  int mouseX;
+  int mouseY;
+  int mouseHeight;
 };
 
 extern struct plat_display PD;
+
+struct SDLMouseInfo {
+  int xDiff;
+  int yDiff;
+  
+  int buttonIndex;
+  bool UpNDown;
+
+  // bool leftButtonPressed;
+  // bool leftButtonReleased;
+  // int leftButtonClicks;
+
+  // bool middleButtonPressed;
+  // bool middleButtonReleased;
+  // int middleButtonClicks;
+
+  // bool rightButtonPressed;
+  // bool rightButtonReleased;
+  // int rightButtonClicks;
+  
+  bool mouseMoved;
+  bool buttonChanged;
+};
+
+struct SDLMouseInfo sdlMouseInfo;
 
 // extern void Resize_Window(ARMul_State *state,int x,int y);
 

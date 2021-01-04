@@ -59,7 +59,9 @@ else
 	ifeq ($(DEBUG),yes)
 		CFLAGS += -O0 -g
 	else
-		CFLAGS = -O3 
+		# CFLAGS = -O3 
+		CFLAGS += -O0 -g
+		
 		# -funroll-loops -fexpensive-optimizations -ffast-math \
 		-fomit-frame-pointer
 		#-frerun-cse-after-loop
