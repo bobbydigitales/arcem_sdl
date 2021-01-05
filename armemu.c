@@ -25,6 +25,10 @@
 #include "arch/ArcemConfig.h"
 #include "ControlPane.h"
 
+#ifdef SYSTEM_web
+   #include "emscripten.h"
+#endif
+
 ARMul_State statestr;
 
 /* global used to terminate the emulator */
@@ -1087,22 +1091,23 @@ PipelineEntry abortpipe = {
 #define PIPESIZE 4 /* 3 or 4. 4 seems to be slightly faster? */
 #endif
 
-void
-ARMul_Emulate26(ARMul_State *state)
-{
-  PipelineEntry pipe[PIPESIZE];   /* Instruction pipeline */
-#ifndef FLATPIPE
-  ARMword pc = 0;          /* The address of the current instruction */
-#endif
-  uint_fast8_t pipeidx = 0; /* Index of instruction to run */
+struct EventLoopArgs {
+   ARMul_State *state;
+   PipelineEntry* pipe;
+   uint_fast8_t* pipeidx;
+   ARMword* pc;
+};
 
-  EmuRate_Reset(state);
-
-  /**************************************************************************\
-   *                        Execute the next instruction                    *
-  \**************************************************************************/
-  kill_emulator = false;
-  while (kill_emulator == false) {
+void EventLoop(void* args) {
+   
+   struct EventLoopArgs* eventLoopArgs = (struct EventLoopArgs*)args;
+   
+   ARMul_State *state = eventLoopArgs->state;
+   PipelineEntry* pipe = eventLoopArgs->pipe;
+   uint_fast8_t* pipeidx = eventLoopArgs->pipeidx;
+   ARMword* pc = eventLoopArgs->pc;
+   
+   
     Prof_Begin("ARMul_Emulate26 prime");
     if (state->NextInstr < PRIMEPIPE) {
       pipe[1].instr = state->decoded;
@@ -1375,12 +1380,39 @@ ARMul_Emulate26(ARMul_State *state)
 #endif
     } /* for loop */
 
-    state->decoded = pipe[(pipeidx+1)%PIPESIZE].instr;
-    state->loaded = pipe[(pipeidx+2)%PIPESIZE].instr;
+    state->decoded = pipe[(*pipeidx+1)%PIPESIZE].instr;
+    state->loaded = pipe[(*pipeidx+2)%PIPESIZE].instr;
 #ifndef FLATPIPE
     state->pc = pc;
 #else
     state->pc = PC;
 #endif
-  }
+}
+
+void
+ARMul_Emulate26(ARMul_State *state)
+{
+  PipelineEntry pipe[PIPESIZE];   /* Instruction pipeline */
+// #ifndef FLATPIPE
+  ARMword pc = 0;          /* The address of the current instruction */
+// #endif
+  uint_fast8_t pipeidx = 0; /* Index of instruction to run */
+
+  EmuRate_Reset(state);
+
+   struct EventLoopArgs args = {state, pipe, &pipeidx, &pc};
+
+  /**************************************************************************\
+   *                        Execute the next instruction                    *
+  \**************************************************************************/
+  kill_emulator = false;
+  
+  
+#ifdef SYSTEM_web
+   emscripten_set_main_loop_arg(EventLoop, &args, 0, 0);
+#else
+   while (kill_emulator == false) {
+      EventLoop(&args);
+   }
+#endif
 } /* Emulate 26 in instruction based mode */

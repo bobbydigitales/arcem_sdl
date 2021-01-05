@@ -30,7 +30,7 @@ SOUND_SUPPORT=no
 SOUND_PTHREAD=yes
 
 # HostFS support - currently experimental - to enable set to 'yes'
-HOSTFS_SUPPORT=yes
+HOSTFS_SUPPORT=no
 
 # Endianess of the Host system, the default is little endian (x86 and
 # ARM. If you run on a big endian system such as Sparc and some versions
@@ -197,7 +197,7 @@ endif
 ifeq (${SYSTEM},sdl)
 CC = gcc
 LD = gcc
-CFLAGS += -DSYSTEM_sdl -I/usr/local/include/SDL2
+CFLAGS += -DSYSTEM_sdl -I/usr/local/include/SDL2 -I/usr/include/SDL2
 #LDFLAGS += -s WASM=0
 OBJS += sdl/sdlDisplayDriver.o
 LIBS += -lSDL2 -L/usr/local/lib
@@ -209,9 +209,10 @@ SYSTEM=sdl
 CC = emcc
 LD = emcc
 #CFLAGS += -DSYSTEM_sdl -I/usr/local/Cellar/sdl2/2.0.5/include/SDL2/ -L/usr/local/Cellar/sdl2/2.0.5/lib/
-CFLAGS += -D__web__ -s USE_SDL=2 -s TOTAL_MEMORY=67108864 -g4
-LDFLAGS += -g4 -s USE_SDL=2 -s WASM=0 --preload-file ROM --preload-file arcemrc -s TOTAL_MEMORY=67108864
-OBJS += sdl/sdlDisplayDriver.o
+CFLAGS += -DSYSTEM_web -D__web__ -s USE_SDL=2 -s TOTAL_MEMORY=67108864 -g4 -I../emsdk/upstream/emscripten/system/include/emscripten/ 
+LDFLAGS += -g4 --source-map-base / -s USE_SDL=2 -s WASM=1 --preload-file ROM --preload-file arcemrc -s TOTAL_MEMORY=67108864
+# LDFLAGS += -s USE_SDL=2 -s WASM=0 --preload-file ROM --preload-file arcemrc -s TOTAL_MEMORY=67108864
+# OBJS += sdl/sdlDisplayDriver.o
 #LIBS += -lSDL2 -L/usr/local/Cellar/sdl2/2.0.5/lib/
 TARGET=arcem.html
 endif
