@@ -1104,7 +1104,7 @@ void EventLoop(void* args) {
    
    ARMul_State *state = eventLoopArgs->state;
    PipelineEntry* pipe = eventLoopArgs->pipe;
-   uint_fast8_t* pipeidx = eventLoopArgs->pipeidx;
+   uint_fast8_t pipeidx = *eventLoopArgs->pipeidx; // bobbydigitales: FIXME this breaks the PIPESIZE == 3 code below
    ARMword* pc = eventLoopArgs->pc;
    
    
@@ -1380,8 +1380,8 @@ void EventLoop(void* args) {
 #endif
     } /* for loop */
 
-    state->decoded = pipe[(*pipeidx+1)%PIPESIZE].instr;
-    state->loaded = pipe[(*pipeidx+2)%PIPESIZE].instr;
+    state->decoded = pipe[(pipeidx+1)%PIPESIZE].instr;
+    state->loaded = pipe[(pipeidx+2)%PIPESIZE].instr;
 #ifndef FLATPIPE
     state->pc = pc;
 #else

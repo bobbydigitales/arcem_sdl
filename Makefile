@@ -199,7 +199,7 @@ CC = gcc
 LD = gcc
 CFLAGS += -DSYSTEM_sdl -I/usr/local/include/SDL2 -I/usr/include/SDL2
 #LDFLAGS += -s WASM=0
-OBJS += sdl/sdlDisplayDriver.o
+# OBJS += sdl/sdlDisplayDriver.o
 LIBS += -lSDL2 -L/usr/local/lib
 TARGET=arcem
 endif
