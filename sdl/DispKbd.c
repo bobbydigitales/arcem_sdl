@@ -246,15 +246,8 @@ int Kbd_PollHostKbd(ARMul_State *state)
 int ChangeRenderResolution(int width, int height)
 {
 
-	if (PD.cursorTexture)
-	{
-		SDL_DestroyTexture(PD.cursorTexture);
-	}
-
-	if (PD.displayTexture)
-	{
-		SDL_DestroyTexture(PD.displayTexture);
-	}
+	SDL_DestroyTexture(PD.cursorTexture);
+	SDL_DestroyTexture(PD.displayTexture);
 
 	if (!PD.renderer)
 	{

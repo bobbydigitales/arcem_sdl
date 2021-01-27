@@ -197,10 +197,10 @@ endif
 ifeq (${SYSTEM},sdl)
 CC = gcc
 LD = gcc
+# CFLAGS += -fsanitize=address -DSYSTEM_sdl -I/usr/local/include/SDL2 -I/usr/include/SDL2
 CFLAGS += -DSYSTEM_sdl -I/usr/local/include/SDL2 -I/usr/include/SDL2
-#LDFLAGS += -s WASM=0
-# OBJS += sdl/sdlDisplayDriver.o
 LIBS += -lSDL2 -L/usr/local/lib
+#  -fsanitize=address -lasan 
 TARGET=arcem
 endif
 
@@ -208,12 +208,8 @@ ifeq (${SYSTEM},web)
 SYSTEM=sdl
 CC = emcc
 LD = emcc
-#CFLAGS += -DSYSTEM_sdl -I/usr/local/Cellar/sdl2/2.0.5/include/SDL2/ -L/usr/local/Cellar/sdl2/2.0.5/lib/
 CFLAGS += -DSYSTEM_web -D__web__ -s USE_SDL=2 -s TOTAL_MEMORY=67108864 -g4 -I../emsdk/upstream/emscripten/system/include/emscripten/ 
-LDFLAGS += -g4 --source-map-base / -s USE_SDL=2 -s WASM=1 --preload-file ROM --preload-file arcemrc -s TOTAL_MEMORY=67108864
-# LDFLAGS += -s USE_SDL=2 -s WASM=0 --preload-file ROM --preload-file arcemrc -s TOTAL_MEMORY=67108864
-# OBJS += sdl/sdlDisplayDriver.o
-#LIBS += -lSDL2 -L/usr/local/Cellar/sdl2/2.0.5/lib/
+LDFLAGS += -g4 -s ASSERTIONS=2 -s SAFE_HEAP=1 -s STACK_OVERFLOW_CHECK=1 --source-map-base http://localhost:8000/ -s USE_SDL=2 -s WASM=1 --preload-file ROM --preload-file arcemrc -s TOTAL_MEMORY=67108864
 TARGET=arcem.html
 endif
 
