@@ -78,6 +78,8 @@ static const char *arrow[] = {
 	"                                ",
 	"0,0"};
 
+static void ProcessKey(ARMul_State *state, SDL_Event event);
+
 static SDL_Cursor *init_system_cursor(const char *image[])
 {
 	int i, row, col;
@@ -348,7 +350,7 @@ void SDD_Name(Host_PollDisplay)(ARMul_State *state)
 				SDL_SetRelativeMouseMode(SDL_FALSE);
 			}
 
-			// ProcessKey(event);
+			ProcessKey(state, event);
 			break;
 
 		case SDL_QUIT:
@@ -434,6 +436,34 @@ SDD_HostColour SDD_Name(Host_GetColour)(ARMul_State *state, uint_fast16_t col)
 
 	return r << 16 | g << 8 | b;
 }
+
+
+static void ProcessKey(ARMul_State *state, SDL_Event event)
+{
+
+fprintf(stderr,"key = %d modifier = %d type = %d timestamp = %d\n",
+			event.key.keysym.sym,
+			event.key.keysym.mod,
+			event.key.type,
+			event.key.timestamp);
+
+if (KBD.BuffOcc >= KBDBUFFLEN)
+	{
+#ifdef DEBUG_KBD
+		fprintf(stderr, "KBD: Missed mouse event - buffer full\n");
+#endif
+		return;
+	}
+
+	/* 
+	KBD.Buffer[KBD.BuffOcc].KeyColToSend = ButtonNum;
+	KBD.Buffer[KBD.BuffOcc].KeyRowToSend = 7;
+	KBD.Buffer[KBD.BuffOcc].KeyUpNDown = UpNDown;
+	Now add it to the buffer */
+
+
+}
+
 
 // SDD_Row SDD_Name(Host_BeginRow)(ARMul_State *state,int row,int offset)
 //  - Function to return a SDD_Row instance suitable for accessing the indicated
