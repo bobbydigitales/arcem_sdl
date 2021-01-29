@@ -79,70 +79,45 @@ static const char *arrow[] = {
 	"0,0"};
 
 struct ArcKeyTrans transTable[]={
-{SDLK_ESCAPE,0,0}, {SDLK_F1,0,1}, {SDLK_F2,0,2}, {SDLK_F3,0,3}, {SDLK_F4,0,4}, {SDLK_F5,0,5},
-{SDLK_F6,0,6}, {SDLK_F7,0,7},{SDLK_F8,0,8}, {SDLK_F9,0,9},
-{SDLK_F10,0,10},{SDLK_F11,0,11},{SDLK_F12,0,12},
-/*{SDLK_PRINT,0,13},*/{SDLK_SCROLLLOCK,0,14},{SDLK_PAUSE,0,15},
-    /*  {XK_Break,0,15}, */
+{SDLK_ESCAPE, 0, 0}, {SDLK_F1,  0, 1}, {SDLK_F2,  0, 2}, {SDLK_F3,  0, 3},
+{SDLK_F4,     0, 4}, {SDLK_F5,  0, 5}, {SDLK_F6,  0, 6}, {SDLK_F7,  0, 7},
+{SDLK_F8,     0, 8}, {SDLK_F9,  0, 9}, {SDLK_F10, 0,10}, {SDLK_F11, 0,11},
+{SDLK_F12,    0,12}, {SDLK_PRINTSCREEN,0,13},{SDLK_SCROLLLOCK,0,14}, {SDLK_PAUSE,0,15},/*{XK_Break,0,15}, */
 
-{SDLK_BACKQUOTE,1,0},{SDLK_1,1,1},{SDLK_2,1,2},{SDLK_3,1,3},{SDLK_4,1,4},
-{SDLK_5,1,5},{SDLK_6,1,6},{SDLK_7,1,7},{SDLK_8,1,8},{SDLK_9,1,9},{SDLK_0,1,10},
-//{VK_DASH,1,11},
-//{VK_TOPADD,1,12},
-    /*  {XK_sterling,1,13},{XK_currency,1,13}, */
-    // I'm using the weird key for the pound key
-//{VK_WEIRD, 1, 13}, {VK_WEIRD, 1, 13},
-//{VK_BACK,1,14},{VK_INSERT,1,15},
+{SDLK_BACKQUOTE, 1, 0},{SDLK_1, 1, 1},{SDLK_2, 1, 2},{SDLK_3, 1, 3},
+{SDLK_4, 1, 4}, {SDLK_5, 1, 5}, {SDLK_6, 1, 6}, {SDLK_7, 1, 7},
+{SDLK_8, 1, 8}, {SDLK_9, 1, 9},{SDLK_0, 1, 10}, {SDLK_MINUS, 1, 11},
+{SDLK_PLUS, 1, 12}, /*{POUND, 1, 13},*/ {SDLK_BACKSPACE, 1, 14},{SDLK_INSERT, 1, 15},
 
-//{VK_HOME,2,0},
-    /* For some screwy reason these seem to be missing in X11R5 */
-//{VK_PAGEUP,2,1},
-//{VK_NUMLOCK,2,2},
-//{VK_DIVIDE,2,3},{VK_MULTIPLY,2,4},{VK_SEPARATOR,2,5}, 
-/* X doesn't define
-    a # on the keypad -
-    so we use KP_F1 - but
-    most keypads don't have that either! */
+{SDLK_HOME, 2, 0}, {SDLK_PAGEUP, 2, 1}, {SDLK_NUMLOCKCLEAR, 2, 2}, {SDLK_KP_DIVIDE, 2, 3},
+{SDLK_KP_MULTIPLY, 2, 4}, /*{KP_HASH, 2, 5}*/ {SDLK_TAB, 2, 6}, {SDLK_q, 2, 7},
+{SDLK_w, 2, 8}, {SDLK_e, 2, 9}, {SDLK_r, 2, 10}, {SDLK_t, 2, 11},
+{SDLK_y,2,12}, {SDLK_u, 2, 13}, {SDLK_i, 2, 14}, {SDLK_o, 2, 15},
 
-{SDLK_TAB,2,6},{SDLK_q,2,7},{SDLK_w,2,8},{SDLK_e,2,9},
-{SDLK_r,2,10},{SDLK_t,2,11},{SDLK_y,2,12},{SDLK_u,2,13},
-{SDLK_i,2,14},{SDLK_o,2,15},
+{SDLK_p, 3, 0}, {SDLK_LEFTPAREN, 3, 1}, {SDLK_RIGHTPAREN,3,2}, {SDLK_BACKSLASH, 3, 3},
+{SDLK_DELETE, 3, 4}, {SDLK_END, 3, 5}, {SDLK_PAGEDOWN, 3, 6}, {SDLK_KP_7, 3, 7},
+{SDLK_KP_8, 3, 8}, {SDLK_KP_9, 3, 9}, {SDLK_KP_MINUS, 3, 10}, {SDLK_LCTRL, 3, 11},
+{SDLK_a, 3, 12}, {SDLK_s, 3, 13}, {SDLK_d, 3, 14}, {SDLK_f, 3, 15},
 
-{SDLK_p,3,0},{SDLK_LEFTPAREN,3,1},
-{SDLK_RIGHTPAREN,3,2},
-{SDLK_BACKSLASH,3,3},
-{SDLK_DELETE,3,4},{SDLK_END,3,5},
-{SDLK_PAGEDOWN,3,6},
-{SDLK_KP_7,3,7},{SDLK_KP_8,3,8},{SDLK_KP_9,3,9},
-//{VK_SUBTRACT,3,10},{VK_LCONTROL,3,11},
-{SDLK_a,3,12},{SDLK_s,3,13},{SDLK_d,3,14},{SDLK_f,3,15},
-
-{SDLK_g,4,0},{SDLK_h,4,1},{SDLK_j,4,2},{SDLK_k,4,3},
-{SDLK_l,4,4},{SDLK_SEMICOLON,4,5},
-//{VK_APOSTROPHY,4,6},
-{SDLK_RETURN,4,7},{SDLK_KP_4,4,8},
-{SDLK_KP_5,4,9},{SDLK_KP_6,4,10},{SDLK_PLUS,4,11},
-    /* {VK_LSHIFT,4,12},  {VK_SHIFT,4,12},{VK_Z,4,14},{VK_X,4,15},
+{SDLK_g, 4, 0}, {SDLK_h, 4, 1}, {SDLK_j, 4, 2}, {SDLK_k, 4, 3},
+{SDLK_l, 4, 4}, {SDLK_SEMICOLON, 4, 5}, {SDLK_QUOTE, 4, 6}, {SDLK_RETURN, 4, 7},
+{SDLK_KP_4, 4, 8}, {SDLK_KP_5, 4, 9}, {SDLK_KP_6, 4, 10}, {SDLK_PLUS, 4, 11},
+{SDLK_LSHIFT, 4, 12}, /*{??, 4, 13},*/{SDLK_z, 4, 14}, {SDLK_x, 4, 15},
 
 
-{VK_C,5,0},{VK_V,5,1},{VK_B,5,2},{VK_N,5,3},{VK_M,5,4},
-{VK_COMMA,5,5},{VK_PERIOD,5,6},
-{VK_SLASH,5,7},
-{VK_RSHIFT,5,8},{VK_UP,5,9},{VK_NUMPAD1,5,10},
-{VK_NUMPAD2,5,11},{VK_NUMPAD3,5,12},{VK_CAPITAL,5,13},
-{VK_ALT,5,14},
-{VK_SPACE,5,15},*/
+{SDLK_c, 5, 0}, {SDLK_v, 5, 1}, {SDLK_b, 5, 2}, {SDLK_n, 5, 3},
+{SDLK_m, 5, 4}, {SDLK_COMMA, 5, 5}, {SDLK_PERIOD, 5, 6}, {SDLK_SLASH, 5, 7},
+{SDLK_RSHIFT, 5, 8}, {SDLK_UP,5,9}, {SDLK_KP_1, 5, 10}, {SDLK_KP_2, 5, 11},
+{SDLK_KP_3, 5, 12}, {SDLK_CAPSLOCK, 5, 13}, {SDLK_LALT, 5, 14}, {SDLK_SPACE, 5, 15},
 
-    /*  {XK_Alt_R,6,0}, 
-{VK_RCONTROL,6,1},
-{VK_LEFT,6,2},{VK_DOWN,6,3},{VK_RIGHT,6,4},
-{VK_NUMPAD0,6,5},{VK_DECIMAL,6,6},{VK_EXECUTE,6,7},*/
+{SDLK_RALT, 6, 0}, {SDLK_RCTRL, 6, 1}, {SDLK_LEFT, 6, 2}, {SDLK_DOWN, 6, 3},
+{SDLK_RIGHT, 6, 4}, {SDLK_KP_0, 6, 5}, {SDLK_KP_PERIOD, 6, 6}, {SDLK_KP_ENTER, 6, 7},
 
 {0,-1,-1} /* Termination of list */
 };
 
 
-struct keyloc invertedKeyTable[256];
+struct keyloc invertedKeyTable[0xff];
 
 /*-----------------------------------------------------------------------------
  * GenerateInvertedKeyTable - Turns the list of (symbol, row, col) tuples into
@@ -157,23 +132,26 @@ static void GenerateInvertedKeyTable()
     memset(invertedKeyTable, 0xff, sizeof(invertedKeyTable));
 
     // for each inverted entry...
-    for (i = 0; i < 256; i++)
+    for (i = 0; i < 0xff; i++)
     {
         struct ArcKeyTrans *PresPtr;
-
+        printf("Keymap : %x\t", i);
         // find the keymap
         for(PresPtr = transTable; PresPtr->row != -1; PresPtr++)
         {
-            if (PresPtr->sym==i)
+            if (PresPtr->sym == i ||  PresPtr->sym - 1073741752 == i)
             {
                 // Found a match
                 invertedKeyTable[i].row = PresPtr->row;
                 invertedKeyTable[i].col = PresPtr->col;
+                printf(" %d, \t %d", PresPtr->row, PresPtr->col);
                 break;
             }
         }
+    printf("\n");   
     }
 }
+
 
 
 static void ProcessKey(ARMul_State *state, SDL_Event event);
@@ -548,12 +526,8 @@ SDD_HostColour SDD_Name(Host_GetColour)(ARMul_State *state, uint_fast16_t col)
 
 static void ProcessKey(ARMul_State *state, SDL_Event event)
 {
+int key;
 
-fprintf(stderr,"key = %d modifier = %d type = %d timestamp = %d\n",
-			event.key.keysym.sym,
-			event.key.keysym.mod,
-			event.key.type,
-			event.key.timestamp);
 
 if (KBD.BuffOcc >= KBDBUFFLEN)
 	{
@@ -561,33 +535,47 @@ if (KBD.BuffOcc >= KBDBUFFLEN)
 		fprintf(stderr, "KBD: Missed mouse event - buffer full\n");
 #endif
 		return;
-	}
+}
 
-if (event.key.keysym.sym > 255)
+if (event.key.keysym.sym > 0x7f)
 	{
+	key = event.key.keysym.sym - 1073741752;
 #ifdef DEBUG_KBD
-		fprintf(stderr, "KBD: Unkown key sym = %d \n",
-			event.key.keysym.sym);
+		
+	fprintf(stderr, "KBD: mapped sym = %d, key= %0x \n",
+			event.key.keysym.sym, key );
 #endif	
-		return;
-	}
+}
+else
+	{
+	key = event.key.keysym.sym;
+}
 
-if (invertedKeyTable[event.key.keysym.sym].row ==-1 ||
-	invertedKeyTable[event.key.keysym.sym].col==-1)
+
+if(key > 0xff){
+#ifdef DEBUG_KBD
+		
+	fprintf(stderr, "KBD: Unkown key sym = %d, %0x \n",
+			event.key.keysym.sym, key );
+#endif
+	return;
+}
+
+if (invertedKeyTable[key].row ==-1)
 	{
 
 #ifdef DEBUG_KBD
-	fprintf(stderr, "KBD: Unmapped key sym = %d \n",
-			event.key.keysym.sym);
+	fprintf(stderr, "KBD: Unmapped key sym = %d , key = %0x \n",
+			event.key.keysym.sym, key);
 #endif
 
 	return;
 	} else 
 	{
 
-	KBD.Buffer[KBD.BuffOcc].KeyColToSend = invertedKeyTable[event.key.keysym.sym].col;
-	KBD.Buffer[KBD.BuffOcc].KeyRowToSend = invertedKeyTable[event.key.keysym.sym].row;
-	KBD.Buffer[KBD.BuffOcc].KeyUpNDown = (event.key.type == SDL_KEYUP ? true : false);
+	KBD.Buffer[KBD.BuffOcc].KeyColToSend = invertedKeyTable[key].col;
+	KBD.Buffer[KBD.BuffOcc].KeyRowToSend = invertedKeyTable[key].row;
+	KBD.Buffer[KBD.BuffOcc].KeyUpNDown = (event.key.type == SDL_KEYUP) ? true : false;
 	KBD.BuffOcc++;
 #ifdef DEBUG_KBD
     fprintf(stderr,"ProcessKey: Got Col,Row=%d,%d UpNDown=%d BuffOcc=%d\n",
