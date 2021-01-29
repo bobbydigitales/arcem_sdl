@@ -3,7 +3,7 @@
 /* Display and keyboard interface for the Arc emulator */
 
 /*#define DEBUG_VIDCREGS */
-// #define DEBUG_KBD
+#define DEBUG_KBD
 // #define DEBUG_MOUSEMOVEMENT
 
 #include <assert.h>
@@ -328,7 +328,7 @@ int DisplayDev_Init(ARMul_State *state)
 	// SDL_ShowCursor(SDL_ENABLE);
 
 
-	//GenerateInvertedKeyTable();
+	GenerateInvertedKeyTable();
 
 	return DisplayDev_Set(state, &sdl_DisplayDev);
 }
@@ -455,6 +455,11 @@ void SDD_Name(Host_PollDisplay)(ARMul_State *state)
 
 			ProcessKey(state, event);
 			break;
+		case SDL_KEYUP:
+
+			ProcessKey(state, event);
+			break;
+
 
 		case SDL_QUIT:
 			SDL_DestroyRenderer(PD.renderer);
@@ -557,15 +562,45 @@ if (KBD.BuffOcc >= KBDBUFFLEN)
 #endif
 		return;
 	}
-printf("sym = %d, row = %d, col = %d\n",
-	event.key.keysym.sym,
-	invertedKeyTable[event.key.keysym.sym].row,
-	invertedKeyTable[event.key.keysym.sym].col);
-	/* 
-	KBD.Buffer[KBD.BuffOcc].KeyColToSend = ButtonNum;
-	KBD.Buffer[KBD.BuffOcc].KeyRowToSend = 7;
-	KBD.Buffer[KBD.BuffOcc].KeyUpNDown = UpNDown;
-	Now add it to the buffer */
+
+if (event.key.keysym.sym > 255)
+	{
+#ifdef DEBUG_KBD
+		fprintf(stderr, "KBD: Unkown key sym = %d \n",
+			event.key.keysym.sym);
+#endif	
+		return;
+	}
+
+if (invertedKeyTable[event.key.keysym.sym].row ==-1 ||
+	invertedKeyTable[event.key.keysym.sym].col==-1)
+	{
+
+#ifdef DEBUG_KBD
+	fprintf(stderr, "KBD: Unmapped key sym = %d \n",
+			event.key.keysym.sym);
+#endif
+
+	return;
+	} else 
+	{
+
+	KBD.Buffer[KBD.BuffOcc].KeyColToSend = invertedKeyTable[event.key.keysym.sym].col;
+	KBD.Buffer[KBD.BuffOcc].KeyRowToSend = invertedKeyTable[event.key.keysym.sym].row;
+	KBD.Buffer[KBD.BuffOcc].KeyUpNDown = (event.key.type == SDL_KEYUP ? true : false);
+	KBD.BuffOcc++;
+#ifdef DEBUG_KBD
+    fprintf(stderr,"ProcessKey: Got Col,Row=%d,%d UpNDown=%d BuffOcc=%d\n",
+              KBD.Buffer[KBD.BuffOcc].KeyColToSend,
+              KBD.Buffer[KBD.BuffOcc].KeyRowToSend,
+              KBD.Buffer[KBD.BuffOcc].KeyUpNDown,
+              KBD.BuffOcc);
+#endif
+
+
+	
+	}
+
 
 
 }
